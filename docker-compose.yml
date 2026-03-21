@@ -1,0 +1,25 @@
+version: "3.8"
+
+services:
+  web:
+    build: .
+    container_name: io200-web
+    expose:
+      - "80"
+    depends_on:
+      - db
+
+  db:
+    image: mariadb:10.11
+    container_name: io200-db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: io200
+      MYSQL_USER: io200
+      MYSQL_PASSWORD: io200pass
+    volumes:
+      - db_data:/var/lib/mysql
+
+volumes:
+  db_data:
