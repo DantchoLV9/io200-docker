@@ -1,40 +1,40 @@
-# --- Stage 1: Build (Compile Extensions) ---
+# --- Stage 1: Build ---
 FROM php:8.2-apache AS builder
 
-# Install build-essential tools and -dev headers
-RUN apt-get update && apt-get install -y --no-install-recommends \
+# Install build dependencies
+RUN apt-get update && apt-get install -y \
     libpng-dev libjpeg-dev libwebp-dev libfreetype6-dev \
-    libonig-dev libzip-dev \
+    libonig-dev libzip-dev unzip curl \
     && docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
-    && docker-php-ext-install -j$(nproc) mysqli pdo_mysql mbstring gd zip
+    && docker-php-ext-install -j$(nproc) mysqli mbstring gd zip pdo_mysql
 
-# --- Stage 2: Production (The Actual Image) ---
+# --- Stage 2: Production ---
 FROM php:8.2-apache
 
-# Install only the runtime libraries (Security Best Practice)
-RUN apt-get update && apt-get install -y --no-install-recommends \
+# Install ONLY runtime libraries (smaller, more secure)
+RUN apt-get update && apt-get install -y \
     libpng16-16 libjpeg62-turbo libwebp7 libfreetype6 \
-    libonig5 libzip4 curl \
+    libonig5 libzip4 curl unzip \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy compiled extensions from builder
+# Copy compiled extensions from the builder stage
 COPY --from=builder /usr/local/lib/php/extensions /usr/local/lib/php/extensions
 COPY --from=builder /usr/local/etc/php/conf.d /usr/local/etc/php/conf.d
 
-# Enable Apache modules for clean URLs
+# Enable Apache modules
 RUN a2enmod rewrite headers
 
-# Security: Use production PHP settings and hide PHP version
-RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" \
-    && sed -i 's/expose_php = On/expose_php = Off/' "$PHP_INI_DIR/php.ini"
+# Use the official Production PHP config as a base
+RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 
-# Custom PHP limits for IO200
-RUN { \
-    echo "file_uploads = On"; \
-    echo "upload_max_filesize = 100M"; \
-    echo "post_max_size = 100M"; \
-    echo "memory_limit = 256M"; \
-    } > /usr/local/etc/php/conf.d/io200-limits.ini
+# Custom PHP settings
+COPY <<EOF /usr/local/etc/php/conf.d/io200-limits.ini
+file_uploads = On
+upload_max_filesize = 100M
+post_max_size = 100M
+memory_limit = 256M
+expose_php = Off
+EOF
 
 WORKDIR /var/www/html
 
@@ -45,4 +45,5 @@ RUN curl -L "https://www.service.io200.com/api/v1/download:installer" -o install
     && chown www-data:www-data install.php \
     && chmod 644 install.php
 
-# Standard Apache entrypoint is inherited from the base image
+# Run as a non-privileged user for security (Optional, depends on IO200 needs)
+# USER www-data 
