@@ -7,6 +7,7 @@ RUN apt-get update && apt-get install -y \
     libwebp-dev \
     libfreetype6-dev \
     libonig-dev \
+    libzip-dev \
     unzip curl \
     && docker-php-ext-install mysqli mbstring gd zip
 
