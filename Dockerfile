@@ -16,7 +16,7 @@ RUN apt-get update && apt-get install -y \
 WORKDIR /var/www/html
 
 # 3. Download and extract (combined to save space)
-RUN curl -L https://www.io200.com/download/latest.zip -o io200.zip \
+RUN curl -L https://www.service.io200.com/api/v1/download:installer -o io200.zip \
     && unzip io200.zip \
     && rm io200.zip \
     && chown -R www-data:www-data /var/www/html \
