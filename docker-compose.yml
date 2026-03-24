@@ -7,17 +7,6 @@ services:
     restart: unless-stopped
     expose:
       - "80"
-    environment:
-      - APP_ENV=production
-      - DB_HOST=mysql
-      - DB_NAME=myapp
-      - DB_USER=myapp
-      - DB_PASS=${DB_PASSWORD}
-    deploy:
-      resources:
-        limits:
-          cpus: "2.0"
-          memory: 512M
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost/health.php"]
       interval: 15s
@@ -28,3 +17,16 @@ services:
       options:
         max-size: "25m"
         max-file: "5"
+  mysql:
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-io200}
+      MYSQL_USER: ${MYSQL_USER:-io200}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+volumes:
+  mysql_data:
