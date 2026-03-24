@@ -4,10 +4,14 @@ services:
   app:
     build: .
     image: io200-site
-    container_name: io200-site
     restart: unless-stopped
     expose:
       - "80"
+    deploy:
+      resources:
+        limits:
+          cpus: "2.0"
+          memory: 512M
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost/health.php"]
       interval: 15s
@@ -20,11 +24,10 @@ services:
         max-file: "5"
   mysql:
     image: mysql:8.0
-    container_name: mysql_db
     restart: unless-stopped
     environment:
-      MYSQL_DATABASE: ${MYSQL_DATABASE:-io200}
-      MYSQL_USER: ${MYSQL_USER:-io200}
+      MYSQL_DATABASE: io200
+      MYSQL_USER: io200
       MYSQL_PASSWORD: ${DB_PASSWORD}
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
     volumes:
