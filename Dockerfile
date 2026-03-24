@@ -32,6 +32,9 @@ COPY php-production.ini /usr/local/etc/php/conf.d/production.ini
 # Configure Apache virtual host
 COPY apache-vhost.conf /etc/apache2/sites-available/000-default.conf
 
+# Create public directory
+RUN mkdir -p /var/www/html/public
+
 # Copy health check code
 COPY ./health.php /var/www/html/public
 
