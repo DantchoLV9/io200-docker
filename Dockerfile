@@ -22,6 +22,7 @@ RUN apt-get update && apt-get install -y \
     pdo \
     pdo_mysql \
     pdo_pgsql \
+    mysqli \
     opcache \
     && rm -rf /var/lib/apt/lists/*
 
@@ -31,8 +32,8 @@ COPY php-production.ini /usr/local/etc/php/conf.d/production.ini
 # Configure Apache virtual host
 COPY apache-vhost.conf /etc/apache2/sites-available/000-default.conf
 
-# Copy application code
-COPY . /var/www/html/public
+# Copy health check code
+COPY ./health.php /var/www/html/public
 
 # Set working directory
 WORKDIR /var/www/html/public
