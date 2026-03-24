@@ -1,3 +1,3 @@
 <?php
-header('Content-Type: application/json');
-echo json_encode(['status' => 'UP']);
+http_response_code(200);
+echo "OK";
