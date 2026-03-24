@@ -32,10 +32,10 @@ COPY php-production.ini /usr/local/etc/php/conf.d/production.ini
 COPY apache-vhost.conf /etc/apache2/sites-available/000-default.conf
 
 # Copy application code
-COPY . /var/www/html/
+COPY . /var/www/html/public
 
 # Set working directory
-WORKDIR /var/www/html
+WORKDIR /var/www/html/public
 
 # Download IO200 install file
 RUN curl -L "https://www.service.io200.com/api/v1/download:installer" -o install.php \
