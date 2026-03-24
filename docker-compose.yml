@@ -3,7 +3,8 @@ version: "3.9"
 services:
   app:
     build: .
-    image: myphpapp:latest
+    image: io200-site
+    container_name: io200-site
     restart: unless-stopped
     expose:
       - "80"
@@ -19,6 +20,7 @@ services:
         max-file: "5"
   mysql:
     image: mysql:8.0
+    container_name: mysql_db
     restart: unless-stopped
     environment:
       MYSQL_DATABASE: ${MYSQL_DATABASE:-io200}
