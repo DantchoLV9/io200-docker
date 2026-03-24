@@ -34,6 +34,15 @@ COPY apache-vhost.conf /etc/apache2/sites-available/000-default.conf
 # Copy application code
 COPY . /var/www/html/
 
+# Set working directory
+WORKDIR /var/www/html
+
+# Download IO200 install file
+RUN curl -L "https://www.service.io200.com/api/v1/download:installer" -o install.php \
+    && chown www-data:www-data /var/www/html \
+    && chown www-data:www-data install.php \
+    && chmod 644 install.php
+
 # Set proper ownership
 RUN chown -R www-data:www-data /var/www/html
 
